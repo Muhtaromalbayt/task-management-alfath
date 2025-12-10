@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface Props {
     task: Task;
-    onClick?: (task: Task) => void;
+    onClick?: (task: Task) => void; // Optional click handler
 }
 
 export function TaskCard({ task, onClick }: Props) {
