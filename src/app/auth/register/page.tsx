@@ -18,7 +18,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { register } from "@/lib/api/auth";
+import { useAuthStore } from "@/stores/use-auth-store";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
     fullName: z.string().min(2, {
@@ -39,6 +42,8 @@ const formSchema = z.object({
 export default function RegisterPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { login } = useAuthStore();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -52,12 +57,24 @@ export default function RegisterPage() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
-            console.log("Register with:", values);
+        setError(null);
+
+        try {
+            const data = await register({
+                email: values.email,
+                password: values.password,
+                name: values.fullName,
+            });
+
+            // Auto login after successful registration
+            login(data.user, data.token);
+            router.push("/dashboard");
+        } catch (err) {
+            console.error("Registration failed:", err);
+            setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
+        } finally {
             setIsLoading(false);
-            router.push("/auth/login");
-        }, 1500);
+        }
     }
 
     return (
@@ -74,6 +91,14 @@ export default function RegisterPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {error && (
+                        <Alert variant="destructive" className="mb-4">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Error</AlertTitle>
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
+
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                             <FormField
@@ -81,7 +106,7 @@ export default function RegisterPage() {
                                 name="fullName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
+                                        <FormLabel>Full Name *</FormLabel>
                                         <FormControl>
                                             <Input placeholder="John Doe" {...field} disabled={isLoading} />
                                         </FormControl>
@@ -94,7 +119,7 @@ export default function RegisterPage() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel>Email *</FormLabel>
                                         <FormControl>
                                             <Input placeholder="name@alfath.org" {...field} disabled={isLoading} />
                                         </FormControl>
@@ -108,7 +133,7 @@ export default function RegisterPage() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Password</FormLabel>
+                                            <FormLabel>Password *</FormLabel>
                                             <FormControl>
                                                 <Input type="password" placeholder="••••••" {...field} disabled={isLoading} />
                                             </FormControl>
@@ -121,7 +146,7 @@ export default function RegisterPage() {
                                     name="confirmPassword"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Confirm Password</FormLabel>
+                                            <FormLabel>Confirm Password *</FormLabel>
                                             <FormControl>
                                                 <Input type="password" placeholder="••••••" {...field} disabled={isLoading} />
                                             </FormControl>
