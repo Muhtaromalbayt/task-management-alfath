@@ -10,7 +10,7 @@ interface Props {
     onClick?: (task: Task) => void;
 }
 
-export function TaskCard({ task }: Props) {
+export function TaskCard({ task, onClick }: Props) {
     const {
         setNodeRef,
         attributes,
