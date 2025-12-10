@@ -51,6 +51,7 @@ export interface Task {
     priority: 'Low' | 'Medium' | 'High';
     column_id: string;
     assignee_id?: string;
+    start_date?: string;
     due_date?: string;
     order: number;
     created_at?: string;

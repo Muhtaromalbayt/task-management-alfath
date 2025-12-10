@@ -66,7 +66,7 @@ tasks.get('/:id', async (c) => {
 // POST /tasks - Create task
 tasks.post('/', async (c) => {
     try {
-        const { content, priority, column_id, assignee_id, due_date } = await c.req.json();
+        const { content, priority, column_id, assignee_id, due_date, start_date } = await c.req.json();
 
         if (!content || !column_id) {
             return c.json({ success: false, error: 'Content and column_id are required' }, 400);
@@ -81,9 +81,9 @@ tasks.post('/', async (c) => {
         const taskId = generateId('task');
 
         await c.env.DB.prepare(
-            `INSERT INTO tasks (id, content, priority, column_id, assignee_id, due_date, "order")
-             VALUES (?, ?, ?, ?, ?, ?, ?)`
-        ).bind(taskId, content, priority || 'Medium', column_id, assignee_id || null, due_date || null, order).run();
+            `INSERT INTO tasks (id, content, priority, column_id, assignee_id, due_date, start_date, "order")
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(taskId, content, priority || 'Medium', column_id, assignee_id || null, due_date || null, start_date || null, order).run();
 
         const task = await c.env.DB.prepare(
             `SELECT t.*, u.name as assignee_name
@@ -104,7 +104,7 @@ tasks.put('/:id', async (c) => {
         const id = c.req.param('id');
         const updates = await c.req.json();
 
-        const allowedFields = ['content', 'priority', 'assignee_id', 'due_date'];
+        const allowedFields = ['content', 'priority', 'assignee_id', 'due_date', 'start_date'];
         const setClause: string[] = [];
         const values: any[] = [];
 

@@ -8,6 +8,7 @@ export interface Task {
     assignee_id?: string;
     assignee_name?: string;
     due_date?: string;
+    start_date?: string;
     order: number;
 }
 
@@ -17,6 +18,7 @@ export interface CreateTaskRequest {
     column_id: string;
     assignee_id?: string;
     due_date?: string;
+    start_date?: string;
 }
 
 export interface UpdateTaskRequest {
@@ -24,6 +26,7 @@ export interface UpdateTaskRequest {
     priority?: 'Low' | 'Medium' | 'High';
     assignee_id?: string;
     due_date?: string;
+    start_date?: string;
 }
 
 export interface MoveTaskRequest {
