@@ -17,7 +17,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Middleware
 app.use('*', logger());
 app.use('*', cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'https://*.pages.dev'],
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'https://*.pages.dev', 'https://task-management.bisma.online'],
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
